@@ -1,0 +1,14 @@
+<!-- **************** Start code by Edward Ekstrom **************** -->
+
+<project default="compile">
+    <target name="compile">
+        <mkdir dir="bin"/>
+        <javac srcdir="src" destdir="bin"/>
+        <jar
+        	destfile="WebServer.jar"
+        	basedir="bin"
+        />
+    </target>
+</project>
+
+<!-- **************** End code by Edward Ekstrom **************** -->

@@ -24,6 +24,9 @@ public class HttpRequest {
 			HttpRequest request = new HttpRequest();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 			String line = reader.readLine();
+// **************** Start code by Edward Ekstrom ****************
+			int contentLength = -1;
+// **************** End code by Edward Ekstrom ****************			
 			if (line == null) {
 				throw new IOException("Server accepts only HTTP requests.");
 			}
@@ -41,18 +44,36 @@ public class HttpRequest {
 			line = reader.readLine();
 			while(line != null && !line.equals("")) {
 				String[] header = line.split(": ", 2);
-				if (header.length != 2)
+				if (header.length != 2){
 					throw new IOException("Cannot parse header from \"" + line + "\"");
-				else 
+				}
+				else {
 					request.headers.put(header[0], header[1]);
+// **************** Start code by Edward Ekstrom ****************					
+					if(header[0].toLowerCase().contains("content-length")){
+						contentLength = Integer.parseInt(header[1]);
+					}
+// **************** End code by Edward Ekstrom ****************
+				}
 				line = reader.readLine();
 			}
-			
-			while(reader.ready()) {
-				line = reader.readLine();
+
+// **************** Start code by Edward Ekstrom ****************
+			if(contentLength > -1){
+				System.out.println(contentLength);
+				char[] buf = new char[contentLength];
+				reader.read(buf);
+				line = new String(buf);
 				request.body.add(line);
 			}
-			
+// **************** End code by Edward Ekstrom ****************
+
+// This code was broken so I implemented the correct code to read in the body of the request above
+			// while(reader.ready()) {
+			// 	line = reader.readLine();
+			// 	request.body.add(line);
+			// }
+
 			return request;
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
@@ -67,7 +88,16 @@ public class HttpRequest {
 	public String getUrl() {
 		return url;
 	}
-	
+
+// **************** Start code by Edward Ekstrom ****************
+	public String getBodyAsString() {
+		String bodyAsString = "";
+		for(int i = 0; i < body.size(); i++){
+			bodyAsString += body.get(i);
+		}
+		return bodyAsString;
+	}
+// **************** End code by Edward Ekstrom ****************	
 	@Override
 	public String toString() {
 		String result = method + " " + url + " " + protocol + "\n";
@@ -84,5 +114,8 @@ public class HttpRequest {
 	public static class HttpMethod {
 		public static final String GET = "GET";
 		public static final String HEAD = "HEAD";
+// **************** Start code by Edward Ekstrom ****************		
+		public static final String PUT = "PUT";
+// **************** End code by Edward Ekstrom ****************		
 	}
 }
